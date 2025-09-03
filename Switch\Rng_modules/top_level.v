@@ -27,8 +27,11 @@ module top_level (
         .random_value(random_value),
 		.LEDR(LEDR)
     );
-	 
-	 // Needs to be replaced with a timmer module maybe (?)
+
+
+	// HENRY PUT TIMER MODULE HERE. WE NEED IT TO ACTIAVTE LED_toggle EVERY game_speed
+	// It needs to take in an input game_speed, and then LED_toggle is toggled once every game_speed cycle. This is so we can implement multiple levels with the state machine.
+
     always @(posedge CLOCK_50) begin
         if (rst) begin
             counter <= 0;
@@ -96,29 +99,13 @@ module top_level (
 	mole_detector #(.N_MOLES(18), .WINDOW_TICKS(1500)) u_mole (
 	  .clk          (CLOCK_50),
 	  .rst          (rst),
-	  .tick         (tick_1ms),     // real 1 ms tick
+	  .tick         (LED_toggle),     // real 1 ms tick
 	  .active_onehot(LEDR),         // LEVEL: which LEDs are currently lit
 	  .btn_edge     (rise_detect),  // PULSE: which button(s) rose this clock
 	  .armed        (/* optional */),
 	  .hit_pulse    (hit_pulse),
 	  .miss_pulse   (miss_pulse)
 	);
-	
-    integer j;
-    always @(posedge CLOCK_50) begin
-        if (rst) begin
-            LEDR <= 18'h00000;
-        end else if (LED_toggle) begin
-			LEDR[random_led] <= 1'b1; 
-			end else begin
-            for (j = 0; j < 18; j = j + 1) begin
-                if (edge_detect[j]) begin
-                    LEDR[j] <= 1'b0;
-                    score <= score + 1'b1
-                end
-            end
-        end
-    end
  
  endmodule
  
