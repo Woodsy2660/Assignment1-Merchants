@@ -68,8 +68,23 @@ module top_level (
         .display3(HEX3)
     );
 
+	wire hit_pulse, miss_pulse;
+
+	// Game Controller Module
+	gamecontroller u_gamcontroller (
+    .clk(CLOCK_50),
+    .rst(rst),
+    .hit_pulse(hit_pulse),
+    .miss_pulse(miss_pulse),
+    .score(score)
+	);
+	
+
     
 	// Logic block, turns on a random LED, turns off when edge detected, might need to be an FSM for final product
+	// REPLACE THIS WITH MOLE DETECTOR AND GAME CONTROLLA
+
+	/// LACHIE ADD MOLE DETECTOR HERE
     integer j;
     always @(posedge CLOCK_50) begin
         if (rst) begin
