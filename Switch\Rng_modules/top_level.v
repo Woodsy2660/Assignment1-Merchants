@@ -4,6 +4,7 @@ module top_level (
     input  wire [17:0] SW,
     output reg  [17:0] LEDR,
     output reg  [8:0]  LEDG
+    output [6:0]  HEX0, HEX1, HEX2, HEX3 // Four 7-segment displays
 );
     wire rst = ~KEY[0];
     
@@ -54,6 +55,19 @@ module top_level (
         .fall_detect(fall_detect),
         .edge_detect(edge_detect)
     );
+
+    reg [10:0] score;
+
+    // Display module
+    display u_display ( 
+        .clk(CLOCK_50),
+        .value(score), 
+        .display0(HEX0),
+        .display1(HEX1),
+        .display2(HEX2),
+        .display3(HEX3)
+    );
+
     
 	// Logic block, turns on a random LED, turns off when edge detected, might need to be an FSM for final product
     integer j;
@@ -66,6 +80,7 @@ module top_level (
             for (j = 0; j < 18; j = j + 1) begin
                 if (edge_detect[j]) begin
                     LEDR[j] <= 1'b0;
+                    score <= score + 1'b1
                 end
             end
         end

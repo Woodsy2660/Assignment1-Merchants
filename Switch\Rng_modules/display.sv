@@ -15,7 +15,7 @@ module display (
 
     /*** DO NOT MODIFY THE CODE ABOVE ***/
 
-    //TODO
+
     always_comb begin : double_dabble_fsm_next_state_logic
         case (current_state)
             Initialise: next_state = Add3;
@@ -29,7 +29,7 @@ module display (
             default:    next_state = Initialise;
         endcase
     end
-    //TODO
+  
     always_ff @(posedge clk) begin : double_dabble_fsm_ff
         // Set state to next state.
         current_state <= next_state;
@@ -43,7 +43,7 @@ module display (
             count <= 0;
         // Set count to zero if in the Result state.
     end
-    //TODO
+
     always_comb begin : double_dabble_fsm_output
         // Assign init, add and done based on the current state.
 
