@@ -1,4 +1,4 @@
-module gamecontroller #(
+module score_updater #(
     parameter int BONUS_THRESH = 5,
     parameter int BONUS_POINTS = 10
 )(
