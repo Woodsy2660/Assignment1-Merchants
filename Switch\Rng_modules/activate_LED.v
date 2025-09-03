@@ -1,4 +1,4 @@
-module mole_controller (
+module activate_LED (
     input        clk,
     input        rst,
     input        LED_toggle,       // from timer (one pulse per cycle)
