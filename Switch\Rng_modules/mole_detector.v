@@ -1,5 +1,5 @@
 module mole_detector #(
-  parameter int N_MOLES = 17,
+  parameter int N_MOLES = 18,
   parameter int WINDOW_TICKS = 1500  // 1500 ms
 )(
   input  logic                 clk, rst,
