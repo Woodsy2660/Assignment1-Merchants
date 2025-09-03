@@ -84,7 +84,17 @@ module top_level (
 	// Logic block, turns on a random LED, turns off when edge detected, might need to be an FSM for final product
 	// REPLACE THIS WITH MOLE DETECTOR AND GAME CONTROLLA
 
-	/// LACHIE ADD MOLE DETECTOR HERE
+	mole_detector #(.N_MOLES(18), .WINDOW_TICKS(1500)) u_mole (
+	  .clk          (CLOCK_50),
+	  .rst          (rst),
+	  .tick         (tick_1ms),     // real 1 ms tick
+	  .active_onehot(LEDR),         // LEVEL: which LEDs are currently lit
+	  .btn_edge     (rise_detect),  // PULSE: which button(s) rose this clock
+	  .armed        (/* optional */),
+	  .hit_pulse    (hit_pulse),
+	  .miss_pulse   (miss_pulse)
+	);
+	
     integer j;
     always @(posedge CLOCK_50) begin
         if (rst) begin
