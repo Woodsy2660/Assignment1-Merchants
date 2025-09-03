@@ -55,7 +55,7 @@ module top_level (
         .edge_detect(edge_detect)
     );
     
-	// Logic block, turns on a random LED, turns off when edge detected
+	// Logic block, turns on a random LED, turns off when edge detected, might need to be an FSM for final product
     integer j;
     always @(posedge CLOCK_50) begin
         if (rst) begin
