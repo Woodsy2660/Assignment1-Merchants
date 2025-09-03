@@ -49,7 +49,7 @@ module top_level (
     switch_detector #(.WIDTH(18)) detector_inst (
         .clk(CLOCK_50),
         .rst(rst),
-        .sig(debounced_switches),
+        .signal(debounced_switches),
         .rise_detect(rise_detect),
         .fall_detect(fall_detect),
         .edge_detect(edge_detect)
