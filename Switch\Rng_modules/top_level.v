@@ -17,7 +17,16 @@ module top_level (
 
     reg [25:0] counter;
     reg LED_toggle;
-    
+
+
+	// Turn on LED Module
+	activate_LED u_actiave_LED ( 
+        .clk(CLOCK_50),
+		.rst(rst),
+		.LED_toggle(LED_toggle),
+        .random_value(random_value),
+		.LEDR(LEDR)
+    );
 	 
 	 // Needs to be replaced with a timmer module maybe (?)
     always @(posedge CLOCK_50) begin
