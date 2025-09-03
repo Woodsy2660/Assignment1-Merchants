@@ -70,8 +70,8 @@ module top_level (
 
 	wire hit_pulse, miss_pulse;
 
-	// Game Controller Module
-	gamecontroller u_gamcontroller (
+	// Score Updater Module
+	score_updater u_score_updater (
     .clk(CLOCK_50),
     .rst(rst),
     .hit_pulse(hit_pulse),
