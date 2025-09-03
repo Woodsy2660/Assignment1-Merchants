@@ -1,11 +1,13 @@
 `timescale 1ns/1ns 
-
+//this module can mainly be used for the output of LED_toggle, 
+//this will output a pulse of one clock cycle every second (in this default set up)
 module timer #(
-    parameter MAX_MS = 1000   // Maximum millisecond value (default = 1000 ms = 1 second)
+    parameter MAX_MS = 1000,  // Maximum millisecond value (default = 1000 ms = 1 second)
 ) (
-    input [3:0]               CLKS_PER_MS, // Number of clock cycles per ms (set based on clk freq)
+     // Number of clock cycles per ms (set based on clk freq)
     input                      clk,
     input                      reset,
+    input                      CLKS_PER_MS //tick speed, set to default of 50000 to get a pulse every second
     input                      up,
     input  [$clog2(MAX_MS)-1:0] start_value,
     input                      enable,
@@ -40,6 +42,7 @@ module timer #(
                         LED_toggle <= 1;   // pulse when rollover
                     end else begin
                         ms_counter <= ms_counter + 1;
+                        LED_toggle <= 0;
                     end
                 end else begin
                     if (ms_counter == 0) begin
@@ -47,6 +50,7 @@ module timer #(
                         LED_toggle <= 1;   // pulse when rollover
                     end else begin
                         ms_counter <= ms_counter - 1;
+                        LED_toggle <= 0;
                     end
                 end
             end else begin
