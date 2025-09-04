@@ -33,12 +33,11 @@ module Assignment1Test (
     wire [9:0] game_speed = SW[9:0];  // Fixed: use all 10 switches
     
     // Timer instance
-    timer #(
-        .MAX_MS(1000)   // can adjust max interval as needed
-    ) timer_inst (
+    timer timer_inst (
         .clk(CLOCK_50),
         .reset(rst),        
         .up(1'b1),                     // count upwards
+		.max_ms(16'd1000),
         .start_value(0),               // start at 0
         .enable(1'b1),                 // always enabled
         .timer_value(),                // unused for now
