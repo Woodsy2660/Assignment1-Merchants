@@ -4,23 +4,24 @@ module rng #(
     parameter SEED = 985             // Must be non-zero
 ) (
     input clk,
-    output [4:0] random_value
+    output [3:0] random_value        // Changed to 4 bits for 0-9 range
 );
-    reg [17:0] lfsr;                 // 18-bit LFSR
+    reg [9:0] lfsr;                  // 10-bit LFSR
     integer i;                       // for loop index
     
     // Initialize the LFSR
-    initial lfsr = SEED;
+    initial lfsr = SEED[9:0];        // Use lower 10 bits of seed
     
-    // Set the feedback (tap bits 18 and 11 for maximal 18-bit LFSR)
+    // Set the feedback (tap bits 10 and 7 for maximal 10-bit LFSR)
     wire feedback;
-    assign feedback = lfsr[17] ^ lfsr[10];
+    assign feedback = lfsr[9] ^ lfsr[6];
     
     // Shift register logic
     always @(posedge clk) begin
-        lfsr <= {lfsr[16:0], feedback}; // Shift left and insert feedback at LSB
+        lfsr <= {lfsr[8:0], feedback}; // Shift left and insert feedback at LSB
     end
     
-    assign random_value = lfsr % 10;
+    // Convert LFSR output to 0-9 range
+    assign random_value = (lfsr % 10);
     
 endmodule
