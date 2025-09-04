@@ -1,21 +1,18 @@
 `timescale 1ns/1ns 
-//this module can mainly be used for the output of LED_toggle, 
-//this will output a pulse of one clock cycle every second (in this default set up)
-module timer #(
-    parameter MAX_MS = 1000,  // Maximum millisecond value (default = 1000 ms = 1 second)
-    parameter CLKS_PER_MS = 50000  // Number of clock cycles per ms (set based on clk freq)
-) (
-    input                      clk,
-    input                      reset,
-    input                      up,
-    input  [$clog2(MAX_MS)-1:0] start_value,
-    input                      enable,
-    output [$clog2(MAX_MS)-1:0] timer_value,
-    output reg                 LED_toggle    // pulse every ~1s
+module timer (
+    input                     clk,
+    input                     reset,
+    input                     up,
+    input      [15:0]         max_ms,        // 1000 for 1 sec!
+    input      [15:0]         start_value,
+    input                     enable,
+    output [15:0]             timer_value,
+    output reg                LED_toggle
 );
     // Internal registers
-    reg [$clog2(CLKS_PER_MS)-1:0] clk_cycle_counter;
-    reg [$clog2(MAX_MS)-1:0] ms_counter;
+    parameter CLKS_PER_MS = 50000;
+    reg [15:0] clk_cycle_counter;
+    reg [15:0] ms_counter;
     reg count_up;
     
     always @(posedge clk) begin
@@ -34,20 +31,18 @@ module timer #(
             if (clk_cycle_counter >= (CLKS_PER_MS - 1)) begin
                 clk_cycle_counter <= 0;
                 if (count_up) begin
-                    if (ms_counter == MAX_MS-1) begin
+                    if (ms_counter == max_ms-1) begin
                         ms_counter <= 0;
                         LED_toggle <= 1;   // pulse when rollover
                     end else begin
                         ms_counter <= ms_counter + 1;
-                        LED_toggle <= 0;
                     end
                 end else begin
                     if (ms_counter == 0) begin
-                        ms_counter <= MAX_MS-1;
+                        ms_counter <= max_ms-1;
                         LED_toggle <= 1;   // pulse when rollover
                     end else begin
                         ms_counter <= ms_counter - 1;
-                        LED_toggle <= 0;
                     end
                 end
             end else begin
