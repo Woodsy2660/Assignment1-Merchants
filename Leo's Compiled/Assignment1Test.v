@@ -8,28 +8,33 @@ module Assignment1Test (
 );
     wire rst = ~KEY[0];
 	 
+	 // level select module
 	 
-	 reg [15:0] difficulty_ms;	// this is to be Updated on a rising edge of the key press
-
 	 
-	// Latch difficulty on key press
-	always @(posedge CLOCK_50 or posedge rst) begin
-		 if (rst)
-			  difficulty_ms <= 16'd2000; // default clock speed = easy
-			  
-		 else if (~KEY[1])
-				
-			  difficulty_ms <= 16'd2000; // Easy (slow LED changes)
-			  
-		 else if (~KEY[2])
-				
-			  difficulty_ms <= 16'd1000; // Medium
-			  
-		 else if (~KEY[3])
-		 
-			  difficulty_ms <= 16'd750;  // Hard
+	 // Level select module
+	wire [1:0] current_level;
+	wire level_reset;
+	wire system_reset = rst | level_reset;  // Combine global reset with level reset
 
+	level_select #(.DELAY_COUNTS(500000)) u_level_select (
+		.clk(CLOCK_50),
+		.rst(rst),
+		.keys(KEY[3:1]),
+		.current_level(current_level),
+		.level_reset(level_reset)
+	);
+	
+	reg [31:0] difficulty_ms;
+
+	always @(*) begin
+		case (current_level)
+			2'b00: difficulty_ms = 1500;
+			2'b01: difficulty_ms = 1000;
+			2'b10: difficulty_ms = 750;
+			default: difficulty_ms = 1500;  // fallback
+		endcase
 	end
+	
 
 							  
     // RNG module from lesson
@@ -61,7 +66,7 @@ module Assignment1Test (
         .clk(CLOCK_50),
         .reset(rst),        
         .up(1'b1),                     // count upwards
-		.max_ms(difficulty_ms),
+		  .max_ms(difficulty_ms),
         .start_value(0),               // start at 0
         .enable(1'b1),                 // always enabled
         .timer_value(),                // unused for now
