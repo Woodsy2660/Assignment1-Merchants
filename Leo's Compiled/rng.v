@@ -21,6 +21,6 @@ module rng #(
         lfsr <= {lfsr[16:0], feedback}; // Shift left and insert feedback at LSB
     end
     
-    assign random_value = lfsr % 18;
+    assign random_value = lfsr % 10;
     
 endmodule
