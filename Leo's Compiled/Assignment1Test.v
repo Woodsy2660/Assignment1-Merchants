@@ -14,6 +14,12 @@ module Assignment1Test (
         .clk(CLOCK_50),
         .random_value(random_led)
     );
+
+	wire [4:0] random_led_2; 
+    rng2 #(.OFFSET(0), .MAX_VALUE(262143), .SEED(985)) rng_inst (
+        .clk(CLOCK_50),
+		.random_value2(random_led2)
+    );
     
     reg [25:0] counter;
     wire LED_toggle;
