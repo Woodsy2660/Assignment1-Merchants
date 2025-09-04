@@ -7,18 +7,36 @@ module Assignment1Test (
     output [6:0]  HEX0, HEX1, HEX2, HEX3 // Four 7-segment displays
 );
     wire rst = ~KEY[0];
-    
+	 
+	 
+	 reg [15:0] difficulty_ms;	// this is to be Updated on a rising edge of the key press
+
+	 
+	// Latch difficulty on key press
+	always @(posedge CLOCK_50 or posedge rst) begin
+		 if (rst)
+			  difficulty_ms <= 16'd2000; // default clock speed = easy
+			  
+		 else if (~KEY[1])
+				
+			  difficulty_ms <= 16'd2000; // Easy (slow LED changes)
+			  
+		 else if (~KEY[2])
+				
+			  difficulty_ms <= 16'd1000; // Medium
+			  
+		 else if (~KEY[3])
+		 
+			  difficulty_ms <= 16'd750;  // Hard
+
+	end
+
+							  
     // RNG module from lesson
     wire [4:0] random_led; 
     rng #(.OFFSET(0), .MAX_VALUE(262143), .SEED(985)) rng_inst (
         .clk(CLOCK_50),
         .random_value(random_led)
-    );
-
-	wire [4:0] random_led_2; 
-    rng2 #(.OFFSET(0), .MAX_VALUE(262143), .SEED(985)) rng_inst (
-        .clk(CLOCK_50),
-		.random_value2(random_led2)
     );
     
     reg [25:0] counter;
@@ -43,7 +61,7 @@ module Assignment1Test (
         .clk(CLOCK_50),
         .reset(rst),        
         .up(1'b1),                     // count upwards
-		.max_ms(16'd1000),
+		.max_ms(difficulty_ms),
         .start_value(0),               // start at 0
         .enable(1'b1),                 // always enabled
         .timer_value(),                // unused for now
