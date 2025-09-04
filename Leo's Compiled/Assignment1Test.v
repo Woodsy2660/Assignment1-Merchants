@@ -94,7 +94,7 @@ module Assignment1Test (
     mole_detector #(.N_MOLES(10), .WINDOW_TICKS(1500)) u_mole (  // Fixed: N_MOLES should be 10 for LEDR[9:0]
         .clk          (CLOCK_50),
         .rst          (rst),
-        .tick         (LED_toggle),     // real 1 ms tick
+        .LED_toggle   (LED_toggle),     // real 1 ms tick
         .active_onehot(LEDR),          // LEVEL: which LEDs are currently lit
         .btn_edge     (edge_detect),   // PULSE: which button(s) rose this clock
         .armed        (/* optional */),
