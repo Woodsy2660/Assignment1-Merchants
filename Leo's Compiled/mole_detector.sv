@@ -1,8 +1,8 @@
 module mole_detector #(
-  parameter int N_MOLES = 10;
+  parameter int N_MOLES = 10
 )(
   input  logic                 clk, rst,
-  input  logic                 led_toggle,      // Pulse from timer - defines mole window
+  input  logic                 LED_toggle,      // Pulse from timer - defines mole window
   input  logic [N_MOLES-1:0]   active_onehot,   // which LED/mole is ON
   input  logic [N_MOLES-1:0]   btn_edge,        // debounced rising-edge pulses
   output logic                 armed,           // level: waiting for a hit
@@ -22,7 +22,7 @@ module mole_detector #(
   
   // miss condition - LED_toggle pulse while still armed means time's up
   logic timeout_miss, disappeared_miss;
-  assign timeout_miss = led_toggle && (state == ARMED);  // LED_toggle pulse = window expired
+  assign timeout_miss = LED_toggle && (state == ARMED);  // LED_toggle pulse = window expired
   assign disappeared_miss = (tracked_mole != '0) && (active_onehot == '0);
   
   // level-style output straight from the state
