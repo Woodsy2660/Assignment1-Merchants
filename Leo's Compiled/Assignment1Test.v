@@ -91,7 +91,7 @@ module Assignment1Test (
     
     // Logic block, turns on a random LED, turns off when edge detected, might need to be an FSM for final product
     // REPLACE THIS WITH MOLE DETECTOR AND GAME CONTROLLA
-    mole_detector #(.N_MOLES(10), .WINDOW_TICKS(1500)) u_mole (  // Fixed: N_MOLES should be 10 for LEDR[9:0]
+    mole_detector #(.N_MOLES(10)) u_mole (  // Fixed: N_MOLES should be 10 for LEDR[9:0]
         .clk          (CLOCK_50),
         .rst          (rst),
         .LED_toggle   (LED_toggle),     // real 1 ms tick
