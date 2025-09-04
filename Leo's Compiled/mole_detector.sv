@@ -1,14 +1,13 @@
 module mole_detector #(
-  parameter int N_MOLES = 18,
-  parameter int WINDOW_TICKS = 1500  // 1500 ms
+  parameter int N_MOLES = 10;
 )(
   input  logic                 clk, rst,
-  input  logic                 tick,            // 1-ms tick from your timer
+  input  logic                 led_toggle,      // Pulse from timer - defines mole window
   input  logic [N_MOLES-1:0]   active_onehot,   // which LED/mole is ON
   input  logic [N_MOLES-1:0]   btn_edge,        // debounced rising-edge pulses
   output logic                 armed,           // level: waiting for a hit
   output logic                 hit_pulse,       // 1 cycle when correct hit
-  output logic                 miss_pulse       // 1 cycle when window expired OR mole disappeared
+  output logic                 miss_pulse       // 1 cycle when mole window expires
 );
   // ---------- state machine ----------
   typedef enum logic [1:0] { IDLE, ARMED, DONE } state_t;
@@ -17,20 +16,17 @@ module mole_detector #(
   // Store which mole(s) we're currently tracking
   logic [N_MOLES-1:0] tracked_mole;
   
-  // match / non-match
+  // match / non-match - use tracked_mole for consistency
   logic correct_press;
-  assign correct_press = |(btn_edge & tracked_mole); // align press with tracked mole
+  assign correct_press = |(btn_edge & tracked_mole); // Check against tracked moles
   
-  // miss conditions
+  // miss condition - LED_toggle pulse while still armed means time's up
   logic timeout_miss, disappeared_miss;
-  assign timeout_miss = (win_cnt >= WINDOW_TICKS);
+  assign timeout_miss = led_toggle && (state == ARMED);  // LED_toggle pulse = window expired
   assign disappeared_miss = (tracked_mole != '0) && (active_onehot == '0);
   
   // level-style output straight from the state
   assign armed = (state == ARMED);
-  
-  // window timing
-  logic [$clog2(WINDOW_TICKS+1)-1:0] win_cnt;
   
   // next-state (combinational)
   always_comb begin
@@ -40,15 +36,14 @@ module mole_detector #(
       ARMED : if (correct_press)                 next = DONE;          // hit
               else if (timeout_miss || disappeared_miss)  
                                                  next = DONE;          // timeout or mole disappeared
-      DONE  : if (btn_edge == '0)                next = IDLE;          // wait for button release, then go to IDLE
+      DONE  : next = IDLE;                       // Always go back to IDLE after one cycle
     endcase
   end
   
-  // sequential: state, pulses, counter, and tracked mole
+  // sequential: state, pulses, and tracked mole
   always_ff @(posedge clk or posedge rst) begin
     if (rst) begin
       state        <= IDLE;
-      win_cnt      <= '0;
       hit_pulse    <= 1'b0;
       miss_pulse   <= 1'b0;
       tracked_mole <= '0;
@@ -56,22 +51,15 @@ module mole_detector #(
       state <= next;
       
       // Track which mole we're currently watching
-      if (state == IDLE && active_onehot != '0) begin
-        tracked_mole <= active_onehot;  // Latch the current active mole(s)
-      end else if (state == DONE) begin
-        tracked_mole <= '0;             // Clear tracking when round is done
+      if (next == ARMED && state == IDLE) begin
+        tracked_mole <= active_onehot;  // Latch the mole when entering ARMED
+      end else if (next == IDLE) begin
+        tracked_mole <= '0;             // Clear tracking when going to IDLE
       end
       
-      // 1-cycle pulses when leaving ARMED
-      hit_pulse  <= (state == ARMED) &&  correct_press;
-      miss_pulse <= (state == ARMED) && !correct_press && (timeout_miss || disappeared_miss);
-      
-      // window counter runs only while ARMED
-      if (state == ARMED) begin
-        if (tick) win_cnt <= win_cnt + 1'b1;
-      end else begin
-        win_cnt <= '0;
-      end
+      // 1-cycle pulses when transitioning out of ARMED
+      hit_pulse  <= (state == ARMED) && (next == DONE) && correct_press;
+      miss_pulse <= (state == ARMED) && (next == DONE) && !correct_press;
     end
   end
 endmodule
