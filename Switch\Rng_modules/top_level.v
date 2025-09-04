@@ -16,7 +16,7 @@ module top_level (
 	);
 
     reg [25:0] counter;
-    reg LED_toggle;
+    wire LED_toggle;
 
 
 	// Turn on LED Module
@@ -29,23 +29,23 @@ module top_level (
     );
 
 
-	// HENRY PUT TIMER MODULE HERE. WE NEED IT TO ACTIAVTE LED_toggle EVERY game_speed
-	// It needs to take in an input game_speed, and then LED_toggle is toggled once every game_speed cycle. This is so we can implement multiple levels with the state machine.
+    // Game speed setting (from switches or fixed param)
+    // Example: each "game_speed" is in milliseconds
+    wire [9:0] game_speed = {SW[9:1]};  // use switches to change tick speed
 
-    always @(posedge CLOCK_50) begin
-        if (rst) begin
-            counter <= 0;
-            LED_toggle <= 1'b0;
-        end else begin
-            if (counter >= 26'd50000000) begin // 1 sec
-                counter <= 0;
-                LED_toggle <= 1'b1;
-            end else begin
-                counter <= counter + 1;
-                LED_toggle <= 1'b0;
-            end
-        end
-    end
+    // Timer instance
+    timer #(
+        .MAX_MS(1000)   // can adjust max interval as needed
+    ) timer_inst (
+        .clk(CLOCK_50),
+        .reset(rst),
+        .CLKS_PER_MS(50000),           // 50 MHz clock = 50,000 cycles per ms
+        .up(1'b1),                     // count upwards
+        .start_value(0),               // start at 0
+        .enable(1'b1),                 // always enabled
+        .timer_value(),                // unused for now
+		.LED_toggle(LED_toggle)          // 1-cycle pulse every "game_speed"
+    );
     
 
     wire [17:0] debounced_switches;
