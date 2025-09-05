@@ -107,28 +107,33 @@ module Assignment1Test (
         .display3(HEX3)
     );
     
-    wire hit_pulse, miss_pulse;
+	wire [9:0] hit_pulse;
+	wire [9:0] miss_pulse;
+	wire single_hit = |hit_pulse; 
+	wire single_miss = |miss_pulse;
+
     
     // Score Updater Module
     score_updater u_score_updater (
         .clk(CLOCK_50),
         .rst(rst),
-        .hit_pulse(hit_pulse),
-        .miss_pulse(miss_pulse),
+		.hit_pulse(single_hit),
+		.miss_pulse(single_miss),
         .score(score)
     );
     
     // Logic block, turns on a random LED, turns off when edge detected, might need to be an FSM for final product
     // REPLACE THIS WITH MOLE DETECTOR AND GAME CONTROLLA
-    mole_detector #(.N_MOLES(10)) u_mole (  // Fixed: N_MOLES should be 10 for LEDR[9:0]
-        .clk          (CLOCK_50),
-        .rst          (rst),
-        .LED_toggle   (LED_toggle),     // real 1 ms tick
-        .active_onehot(LEDR),          // LEVEL: which LEDs are currently lit
-        .btn_edge     (edge_detect),   // PULSE: which button(s) rose this clock
-        .armed        (/* optional */),
-        .hit_pulse    (hit_pulse),
-        .miss_pulse   (miss_pulse)
-    );
+    mole_detector #(.N_MOLES(10)) u_mole (
+    	.clk          (CLOCK_50),
+    	.rst          (rst),
+    	.LED_toggle   (LED_toggle),
+    	.active_onehot(LEDR),
+    	.btn_edge     (edge_detect),
+    	.armed        (/* optional */),
+    	.hit_pulse    (hit_pulse),
+    	.miss_pulse   (miss_pulse)
+	);
+
  
 endmodule
